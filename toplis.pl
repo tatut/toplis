@@ -167,8 +167,10 @@ prg("(* 42 10)", [420]).
 prg("(def plus (a b) (+ a b)) (plus 40 2)", [plus, 42]).
 prg("(if (= 1 2) 666 999)", [999]).
 prg("(if (< 1 2) 666 999)", [666]).
+prg("(def fib (n) (if (< n 3) 1 (+ (fib (- n 1)) (fib (- n 2))))) (fib 10)", [fib, 55]).
 
 test(prg, [forall(prg(Source,Results))]) :-
-    toplis:eval_program(env{}, Source, Results).
+    once(toplis:eval_program(env{}, Source, ResultList)),
+    Results = ResultList.
 
 :- end_tests(toplis).
