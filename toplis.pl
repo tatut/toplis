@@ -1,13 +1,9 @@
 :- use_module(library(dcg/basics)).
 :- set_prolog_flag(double_quotes, codes).
 
-read_lisp(Form) :-
-    current_input(In),
-
-    phrase_from_stream(form(Form), In).
-
-read_lisp_string(StrCodes, Form) :-
-    phrase(form(Form), StrCodes).
+%%%%%%%%%%%%%%%
+% Lisp reader %
+%%%%%%%%%%%%%%%
 
 ws --> blanks.
 
@@ -41,6 +37,11 @@ form(Sym) --> [C], { symbol_codef(C) },
 list_items([]) --> [].
 list_items([Item|Items]) --> formt(Item), list_items(Items).
 
+%%%%%%%%%%%%%%%%%%%%
+% Lisp interpreter %
+%%%%%%%%%%%%%%%%%%%%
+
+% Define symbols that are special or builtin
 special(if).
 special(when).
 special(cond).
@@ -78,8 +79,14 @@ eval_all([Form|Forms], [Value|Values]) -->
     eval(Form, Value),
     eval_all(Forms, Values).
 
+% Symbols that evaluate to themselves
+special_symbol_value(nil).
+special_symbol_value(true).
+special_symbol_value(false).
+
 eval(N, N) --> { number(N) }, []. % Numbers evaluate to themselves
-eval(S, Val) --> { atom(S) }, lookup(S, Val). % symbols lookup their values
+eval(S, Val) --> { atom(S), \+ special_symbol_value(S) }, lookup(S, Val). % symbols lookup their values
+eval(S, S) --> { special_symbol_value(S) }.
 eval([FnName|Args], Result) -->
     { \+ special_or_builtin(FnName) }, % Not for special forms
     eval(FnName, fn(ArgNames,[Body])), % FIXME: eval all forms in body and return last
@@ -155,7 +162,7 @@ repl :- current_input(In), stream_to_lazy_list(In, Input),
         repl(env{},Input).
 repl(Env,Input) :-
     phrase(formt(Form), Input, Input1),
-    writeln(got_form(Form)),
+    %writeln(got_form(Form)),
     phrase(eval(Form, Result), [Env], [Env1]),
     format('=> ~w~n', [Result]),
     repl(Env1,Input1).
