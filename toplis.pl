@@ -8,14 +8,7 @@
 ws --> blanks.
 
 %% symbol code is any C symbol matching code and ?, -, +, *, /, =, <, >
-symbol_code_extra(63). % ?
-symbol_code_extra(45). % -
-symbol_code_extra(43). % +
-symbol_code_extra(42). % *
-symbol_code_extra(47). % /
-symbol_code_extra(61). % =
-symbol_code_extra(60). % <
-symbol_code_extra(62). % >
+symbol_code_extra(C) :- memberchk(C, "?-+*/=<>").
 
 symbol_code(C) :- code_type(C, csym).
 symbol_code(C) :- symbol_code_extra(C).
@@ -42,21 +35,8 @@ list_items([Item|Items]) --> formt(Item), list_items(Items).
 %%%%%%%%%%%%%%%%%%%%
 
 % Define symbols that are special or builtin
-special(if).
-special(when).
-special(cond).
-special(def).
-builtin(+).
-builtin(-).
-builtin(*).
-builtin(/).
-builtin(=).
-builtin(<).
-builtin(>).
-builtin(car).
-builtin(cdr).
-builtin(cons).
-builtin(list).
+special(S) :- memberchk(S, [if,when,cond,def]).
+builtin(S) :- memberchk(S, [+,-,*,/,=,<,>,car,cdr,cons,list]).
 special_or_builtin(S) :- special(S).
 special_or_builtin(S) :- builtin(S).
 
