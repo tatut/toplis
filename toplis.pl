@@ -181,6 +181,8 @@ prg("(def plus (a b) (+ a b)) (plus 40 2)", [plus, 42]).
 prg("(if (= 1 2) 666 999)", [999]).
 prg("(if (< 1 2) 666 999)", [666]).
 prg("(def fib (n) (if (< n 3) 1 (+ (fib (- n 1)) (fib (- n 2))))) (fib 10)", [fib, 55]).
+prg("(car (cons 1 (cons 2 (list 3 4))))", [1]).
+prg("(cdr (cons 1 (cons 2 (list 3 4))))", [[2,3,4]]).
 
 test(prg, [forall(prg(Source,Results))]) :-
     once(toplis:eval_program(env{}, Source, ResultList)),
