@@ -52,6 +52,10 @@ builtin(/).
 builtin(=).
 builtin(<).
 builtin(>).
+builtin(car).
+builtin(cdr).
+builtin(cons).
+builtin(list).
 special_or_builtin(S) :- special(S).
 special_or_builtin(S) :- builtin(S).
 
@@ -138,13 +142,22 @@ eval_builtin(<, [I1,I2|Items], true) --> { I1 < I2 }, eval_builtin(<, [I2|Items]
 eval_builtin(<, [I1,I2|Items], false) --> { I1 >= I2 }.
 eval_builtin(<, [_|Items], false) --> eval_builtin(<, Items, false).
 
+eval_builtin(car, [[Car|_]], Car) --> [].
+eval_builtin(car, [[]], nil) --> [].
+eval_builtin(cdr, [[_|Cdr]], Cdr) --> [].
+eval_builtin(cdr, [[]], nil) --> [].
+eval_builtin(cons, [Car,Cdr], [Car|Cdr]) --> [].
+
+eval_builtin(list, List, List) --> [].
+
+
 repl :- current_input(In), stream_to_lazy_list(In, Input),
         repl(env{},Input).
 repl(Env,Input) :-
     phrase(formt(Form), Input, Input1),
     writeln(got_form(Form)),
     phrase(eval(Form, Result), [Env], [Env1]),
-    format('=> ~w~n', Result),
+    format('=> ~w~n', [Result]),
     repl(Env1,Input1).
 
 % Evaluate all text input, gathering all results in list (for testing)
