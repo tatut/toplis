@@ -18,3 +18,5 @@ Run with SWI-Prolog and invoke the goal `repl.` to start a REPL session.
 |: (plus (* 4 10) 2)
 => 42
 ```
+
+Run the test suite with the goal `run_tests(toplis).`
