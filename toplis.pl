@@ -146,7 +146,7 @@ eval_builtin(=, Items, false) --> { \+ forall((member(X, Items), member(Y, Items
 
 eval_builtin(<, [_], _) --> [].
 eval_builtin(<, [I1,I2|Items], true) --> { I1 < I2 }, eval_builtin(<, [I2|Items], true).
-eval_builtin(<, [I1,I2|Items], false) --> { I1 >= I2 }.
+eval_builtin(<, [I1,I2|_], false) --> { I1 >= I2 }.
 eval_builtin(<, [_|Items], false) --> eval_builtin(<, Items, false).
 
 eval_builtin(car, [[Car|_]], Car) --> [].
@@ -163,7 +163,7 @@ repl :- current_input(In), stream_to_lazy_list(In, Input),
 repl(Env,Input) :-
     phrase(formt(Form), Input, Input1),
     %writeln(got_form(Form)),
-    phrase(eval(Form, Result), [Env], [Env1]),
+    once(phrase(eval(Form, Result), [Env], [Env1])),
     format('=> ~w~n', [Result]),
     repl(Env1,Input1).
 
